@@ -1,4 +1,4 @@
 AndroidAsyncMVC
 ===============
 
-Best practices in MVC Android application.
+Best MVC practices in Android application.
