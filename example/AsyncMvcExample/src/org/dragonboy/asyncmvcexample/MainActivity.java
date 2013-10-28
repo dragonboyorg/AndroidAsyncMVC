@@ -6,10 +6,11 @@ import org.dragonboy.asyncmvcexample.controller.MyController;
 import org.dragonboy.asyncmvcexample.model.MyModel;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
+
+import static org.dragonboy.asyncmvcexample.model.MyModel.WHAT_STATUS1_CHANGE;
 
 public class MainActivity extends Activity {
 	MyController mController;
@@ -51,20 +52,31 @@ public class MainActivity extends Activity {
 
 		mModel = new MyModel();
 		mController = new MyController(mModel);
-		mObserver = new MyObserver(new Handler(getMainLooper()));
+		mObserver = new MyObserver();
+		mObserver.setWhats(new int[] { WHAT_STATUS1_CHANGE });
+
 		mModel.registerObserver(mObserver);
 
 		mStatusView.setText(String.valueOf(mModel.getStatus()));
 	}
 
+	@Override
+	protected void onStop() {
+		mController.dispose();
+		mModel.unregisterAll();
+		mController = null;
+		mModel = null;
+		super.onStop();
+	}
+
 	class MyObserver extends Observer {
 
-		public MyObserver(Handler handler) {
-			super(handler);
+		public MyObserver() {
+			super();
 		}
 
 		@Override
-		public void onChanged(Model model, Object data) {
+		protected void onChanged(int what, Model model, Object data) {
 			MyModel myModel = (MyModel) model;
 			mStatusView.setText(String.valueOf(myModel.getStatus()));
 		}
